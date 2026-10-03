@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NetSentinel — Network Operations Dashboard</title>
+<link rel="stylesheet" href="style.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">🛡 NETSENTINEL <span class="brand-sub">Network Operations Dashboard</span></div>
+    <div class="topbar-right">
+      <span id="current-user" class="user-pill"></span>
+      <button id="scan-btn" class="btn btn-secondary">Scan Network</button>
+      <button id="capture-btn" class="btn btn-secondary">Capture Traffic</button>
+      <button id="monitor-toggle" class="btn btn-secondary">Start Monitoring</button>
+      <button id="logout-btn" class="btn btn-danger">Logout</button>
+    </div>
+  </div>
+
+  <div class="tiles">
+    <div class="tile">
+      <div class="tile-label">DEVICES</div>
+      <div class="tile-value" id="tile-devices">–</div>
+    </div>
+    <div class="tile tile-online">
+      <div class="tile-label">ONLINE</div>
+      <div class="tile-value" id="tile-online">–</div>
+    </div>
+    <div class="tile tile-offline">
+      <div class="tile-label">OFFLINE</div>
+      <div class="tile-value" id="tile-offline">–</div>
+    </div>
+    <div class="tile tile-alerts">
+      <div class="tile-label">OPEN ALERTS</div>
+      <div class="tile-value" id="tile-alerts">–</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel panel-wide">
+      <div class="panel-title">Network Traffic</div>
+      <canvas id="traffic-chart" height="90"></canvas>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Protocol Distribution</div>
+      <canvas id="protocol-chart"></canvas>
+    </div>
+
+    <div class="panel panel-wide">
+      <div class="panel-title">Device Status</div>
+      <table class="data-table" id="device-table">
+        <thead>
+          <tr><th>Device</th><th>IP Address</th><th>MAC</th><th>Latency</th><th>Status</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="panel panel-wide panel-alerts">
+      <div class="panel-title">
+        Security Alerts
+        <div class="alert-filters">
+          <select id="alert-status-filter">
+            <option value="">All statuses</option>
+            <option value="OPEN">Open</option>
+            <option value="ACKNOWLEDGED">Acknowledged</option>
+            <option value="RESOLVED">Resolved</option>
+          </select>
+          <input id="alert-search" type="text" placeholder="Search alerts…" />
+        </div>
+      </div>
+      <table class="data-table" id="alert-table">
+        <thead>
+          <tr><th>Severity</th><th>Type</th><th>Source</th><th>Description</th><th>Detected</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
