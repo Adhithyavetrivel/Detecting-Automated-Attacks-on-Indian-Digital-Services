@@ -18,7 +18,9 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api import alerts, auth, devices, interfaces, metrics, monitoring, traffic
 from app.config import get_settings
-from app.database import init_db
+from app.database import SessionLocal, init_db
+from app.models.user import User, UserRole
+from app.security.auth import hash_password
 
 settings = get_settings()
 
@@ -29,6 +31,36 @@ logging.basicConfig(
 logger = logging.getLogger("netsentinel")
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+
+def bootstrap_admin() -> None:
+    """Create the initial admin from environment variables if configured."""
+    username = settings.bootstrap_admin_username
+    password = settings.bootstrap_admin_password
+
+    if not username or not password:
+        return
+
+    db = SessionLocal()
+    try:
+        existing_user = db.query(User).filter(User.username == username).first()
+
+        if existing_user:
+            logger.info("Bootstrap admin '%s' already exists", username)
+            return
+
+        user = User(
+            username=username,
+            hashed_password=hash_password(password),
+            role=UserRole.ADMIN,
+        )
+
+        db.add(user)
+        db.commit()
+
+        logger.info("Bootstrap admin '%s' created successfully", username)
+
+    finally:
+        db.close()
 
 
 @asynccontextmanager
@@ -46,6 +78,8 @@ async def lifespan(app: FastAPI):
 
     init_db()
     logger.info("Database ready at %s", settings.database_url)
+
+    bootstrap_admin()
 
     app.state.start_time = time.time()
     app.state.monitor_task = None

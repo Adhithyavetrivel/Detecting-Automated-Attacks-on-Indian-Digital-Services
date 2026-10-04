@@ -36,11 +36,16 @@ class Settings(BaseSettings):
     # any application code, since SQLAlchemy abstracts the dialect.
     database_url: str = "sqlite:///./netsentinel.db"
 
-    # --- Security / Auth (used from Phase 10 onward, defined now so the
-    # .env.example is complete and nothing has to be retrofitted later) ---
+    # --- Security / Auth ---
     secret_key: str = "CHANGE_ME_INSECURE_DEFAULT_DO_NOT_USE_IN_PRODUCTION"
     access_token_expire_minutes: int = 60
     algorithm: str = "HS256"
+
+    # --- Initial admin bootstrap ---
+    # Optional. Used by deployment environments such as Render where
+    # interactive shell access may not be available.
+    bootstrap_admin_username: str | None = None
+    bootstrap_admin_password: str | None = None
 
     # --- Networking / Monitoring (used from Phase 2 onward) ---
     # A private RFC1918 range is the correct default for a home/lab network.
