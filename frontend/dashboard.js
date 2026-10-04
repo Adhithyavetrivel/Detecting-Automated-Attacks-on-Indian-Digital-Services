@@ -164,13 +164,29 @@ function buildAlertsUrl() {
   return `/api/alerts?${params.toString()}`;
 }
 
-document.getElementById("scan-btn").addEventListener("click",async () => {
-   try {
-       await api("/api/devices/scan", { method: "POST" });
-       refreshAll()
-       } catch (error) {
-         alert("Network scan failed: " + error.message);
-       }
+document.getElementById("scan-btn").addEventListener("click", async () => {
+  const button = document.getElementById("scan-btn");
+  const originalText = button.textContent;
+
+  button.disabled = true;
+  button.textContent = "Scanning...";
+
+  try {
+    const result = await api("/api/devices/scan", { method: "POST" });
+    refreshAll();
+
+    const count = result?.devices?.length ?? 0;
+
+    alert(
+      `Network scan completed.\n\n` +
+      `Devices discovered: ${count}`
+    );
+  } catch (error) {
+    alert("Network scan failed: " + error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = originalText;
+  }
 });
 
 document.getElementById("capture-btn").addEventListener("click", async () => {
