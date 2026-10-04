@@ -164,14 +164,30 @@ function buildAlertsUrl() {
   return `/api/alerts?${params.toString()}`;
 }
 
-document.getElementById("scan-btn").addEventListener("click", async () => {
-  await api("/api/devices/scan", { method: "POST" });
-  refreshAll();
+document.getElementById("scan-btn").addEventListener("click",async () => {
+   try {
+       await api("/api/devices/scan", { method: "POST" });
+       refreshAll()
+       } catch (error) {
+         alert("Network scan failed: " + error.message);
+       }
 });
 
 document.getElementById("capture-btn").addEventListener("click", async () => {
-  await api("/api/monitoring/capture", { method: "POST" });
-  refreshAll();
+    try {
+        await api("/api/monitoring/capture", { method: "POST" });
+        refreshAll();
+    } catch (error) {
+        if (error.message.includes("Packet capture requires elevated privileges")) {
+            alert(
+                "Live packet capture is unavailable on the cloud deployment.\n\n" +
+                "Use the Ubuntu NetSentinel server with sudo/root privileges " +
+                "for live Kali → Ubuntu traffic capture."
+            );
+        } else {
+            alert("Unable to capture traffic: " + error.message);
+        }
+    }
 });
 
 let monitoring = false;
